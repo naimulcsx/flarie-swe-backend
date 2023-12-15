@@ -6,20 +6,18 @@ import { Reward } from './../src/coupon-redeem/entities/Reward';
 import { Coupon } from './../src/coupon-redeem/entities/Coupon';
 import { PlayerCoupon } from './../src/coupon-redeem/entities/PlayerCoupon';
 import { CouponRedeemModule } from './../src/coupon-redeem/coupon-redeem.module';
-import { SeedModule } from './../src/seed/seed.module';
-import { SeedService } from './../src/seed/services/seed.service';
 import * as request from 'supertest';
-import * as iconv from 'iconv-lite';
-iconv.encodingExists('foo');
+import { DataSource } from 'typeorm';
+import { Seeder } from '../src/seeder';
 
 describe('Coupon Redeem (e2e)', () => {
   let app: INestApplication;
-  let seedService: SeedService;
+  let dataSource: DataSource;
+  let seeder: Seeder;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        SeedModule,
         CouponRedeemModule,
         TypeOrmModule.forRoot({
           type: 'mysql',
@@ -32,18 +30,20 @@ describe('Coupon Redeem (e2e)', () => {
           migrations: process.env.typeorm === 'true' ? ['migrations/*.ts'] : [],
           autoLoadEntities: true,
           synchronize: true,
+          keepConnectionAlive: false,
         }),
       ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    seedService = moduleFixture.get<SeedService>(SeedService);
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+    seeder = new Seeder(dataSource);
   });
 
   it('/coupon-redeem (POST) - SHOULD handle invalid playerId with a 400 Bad Request', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 999,
@@ -63,8 +63,8 @@ describe('Coupon Redeem (e2e)', () => {
   });
 
   it('/coupon-redeem (POST) - SHOULD handle invalid rewardId with a 400 Bad Request', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 1,
@@ -84,8 +84,8 @@ describe('Coupon Redeem (e2e)', () => {
   });
 
   it('/coupon-redeem (POST) - SHOULD handle expired reward with a 400 Bad Request', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 1,
@@ -105,8 +105,8 @@ describe('Coupon Redeem (e2e)', () => {
   });
 
   it('/coupon-redeem (POST) - SHOULD handle daily limit exceeded with a 400 Bad Request', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 1,
@@ -137,8 +137,8 @@ describe('Coupon Redeem (e2e)', () => {
   });
 
   it('/coupon-redeem (POST) - SHOULD handle total limit exceeded with a 400 Bad Request', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 1,
@@ -169,8 +169,8 @@ describe('Coupon Redeem (e2e)', () => {
   });
 
   it('/coupon-redeem (POST) - SHOULD successfully redeem a coupon', async () => {
-    await seedService.reset();
-    await seedService.seed();
+    await seeder.reset();
+    await seeder.seed();
 
     const couponRedeemDto = {
       playerId: 1,
