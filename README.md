@@ -1,20 +1,34 @@
-## Software Engineer Backend Test 1
+## Backend Test 1 Submission
 
-## Installation
+## Step 1: Install Dependencies
 
 ```bash
 $ npm install
 ```
 
-## Migration
+## Step 2: Run necessary components
 
-update your mysql config in `env` file
+```
+docker-compose up -d
+```
+
+## Step 3: Migration 
+
+Update your mysql config in `env` file accordingly if you are not using docker-compose to spin up mysql.
 
 ```bash
 $ npm run migration:run
 ```
 
-## Running the app
+## Step 4: Seed
+
+After migration, to populate the database with some dummy data. It will create 5 players and 5 rewards.
+
+```bash
+$ npm run seed
+```
+
+## Step 5: Running the app
 
 ```bash
 # development
@@ -27,15 +41,16 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Unit Test
+
+Running e2e tests will spin up a `test-db` mysql container.
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
 $ npm run test:e2e
+```
 
-# test coverage
-$ npm run test:cov
+## E2E Test
+
+```bash
+$ npm run test
 ```
