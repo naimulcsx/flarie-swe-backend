@@ -13,10 +13,10 @@ export class PlayerCoupon {
   id: number;
 
   @ManyToOne(() => Player)
-  player: Player;
+  Player: Player;
 
   @ManyToOne(() => Coupon)
-  coupon: Coupon;
+  Coupon: Coupon;
 
   @CreateDateColumn()
   redeemedAt: Date;
